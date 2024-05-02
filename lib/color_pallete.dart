@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ColorPallete {
+  late AssetImage logo;
   late Color backgroundColor;
   late Color fontColor;
   late Color textFieldColor;
@@ -11,6 +12,7 @@ class ColorPallete {
 
 class DarkModeColorPallete extends ColorPallete {
   DarkModeColorPallete() {
+    super.logo = const AssetImage('assets/images/logo-terang.png');
     super.backgroundColor = const Color(0xFF272727);
     super.fontColor = const Color(0xFFFFFFFF);
     super.textFieldColor = const Color(0xFF5F6363);
@@ -21,6 +23,7 @@ class DarkModeColorPallete extends ColorPallete {
 
 class LightModeColorPallete extends ColorPallete {
   LightModeColorPallete() {
+    super.logo = const AssetImage('assets/images/logo-gelap.png');
     super.backgroundColor = const Color(0xFFF3F3F3);
     super.fontColor = const Color(0xFF000000);
     super.textFieldColor = const Color(0xFFBEBEBE);

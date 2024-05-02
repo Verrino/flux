@@ -47,7 +47,7 @@ class _LaunchAppScreenState extends State<LaunchAppScreen> {
         : Scaffold(
             backgroundColor: colorPallete.backgroundColor,
             body: Center(
-              child: Image.asset('assets/images/logo.png'),
+              child: Image(image: colorPallete.logo),
             ),
           );
   }
