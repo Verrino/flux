@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,7 +37,12 @@ class _LaunchAppScreenState extends State<LaunchAppScreen> {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 5)).then(
       (value) {
-        Navigator.popAndPushNamed(context, 'login');
+        if (FirebaseAuth.instance.currentUser != null) {
+          Navigator.popAndPushNamed(context, 'insert');
+        }
+        else {
+          Navigator.popAndPushNamed(context, 'login');
+        }
       },
     );
 

@@ -25,7 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
       await AuthenticationService.login(
           _emailController.text, _passwordController.text);
 
-      if (FirebaseAuth.instance.currentUser != null) {}
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.popAndPushNamed(context, 'insert');
+      }
     } catch (e) {
       print(e);
     }

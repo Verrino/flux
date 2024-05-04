@@ -25,7 +25,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await AuthenticationService.register(
           _emailController.text, _passwordController.text);
 
-      if (FirebaseAuth.instance.currentUser != null) {}
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.popAndPushNamed(context, 'insert');
+      }
     } catch (e) {
       print(e);
     }
