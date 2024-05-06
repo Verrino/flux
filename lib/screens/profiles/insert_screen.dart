@@ -24,6 +24,7 @@ class _InsertScreenState extends State<InsertScreen> {
 
   XFile? _selectedImage;
   bool _isLoading = true;
+  String _errorMessage = "";
 
    @override
   void initState() {
@@ -45,17 +46,28 @@ class _InsertScreenState extends State<InsertScreen> {
 
   Future<void> submit() async {
     try {
-      if (_selectedImage != null) {
-        ProfileService.addPhotoProfile(_selectedImage as File);
-      }
-
       if (_usernameController.text.isNotEmpty) {
-        ProfileService.addUser(_usernameController.text, _phoneController.text, _bioController.text);
+        final response = await ProfileService.addUser(_usernameController.text, _phoneController.text, _bioController.text);
+
+        if (response['isError']) {
+          setState(() {
+            _errorMessage = response['message'];
+          });
+          return;
+        }
+
+        if (_selectedImage != null) {
+          ProfileService.addPhotoProfile(_selectedImage as File);
+        }
+        Navigator.popAndPushNamed(context, 'home');
       } else {
+        setState(() {
+          _errorMessage = "Must fill username field";
+        });
         return;
       }
 
-      Navigator.popAndPushNamed(context, 'home');
+
     } catch (e) {
      print(e); 
     }
@@ -111,6 +123,7 @@ class _InsertScreenState extends State<InsertScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (_errorMessage.isNotEmpty) Text(_errorMessage, style: const TextStyle(color: Colors.red)),
                     const Row(
                       children: [
                         Text('Username'),
