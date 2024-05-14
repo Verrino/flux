@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ProfileService {
-  static Future<Map<String, dynamic>> addUser(String username, String phoneNumber, String bio) async {
+  static Future<Map<String, dynamic>> addUser(String username, String phoneNumber, String bio, String? profileImageUrl) async {
     try {
       var isAccountMade = false;
 
@@ -35,11 +35,12 @@ class ProfileService {
       await FirebaseFirestore.instance.collection('accounts').doc(FirebaseAuth.instance.currentUser!.uid)
         .set(
           {
-            "username": username, 
+            "username": username,
             "phone_number": phoneNumber, 
             "bio": bio,
             "followings": [],
             "followers": [],
+            "profilePictureUrl": profileImageUrl ?? '',
             "posts": 0,
           }
         ).whenComplete(() {
@@ -53,14 +54,24 @@ class ProfileService {
     return {'isError': true, 'message': "There is something error."};
   }
 
-  static Future<void> addPhotoProfile(File selectedImage) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-        final storageRef = FirebaseStorage.instance.ref();
-        final imageFileName = selectedImage.path.split("/").last;
-        final timestamp = DateTime.now().microsecondsSinceEpoch;
-        final uploadRef = storageRef.child("$userId/uploads/$timestamp-$imageFileName");
+  static Future<String?> addPhotoProfile(File? selectedImage) async {
+    try {
+      if (selectedImage == null) {
+        return null;
+      }
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final storageRef = FirebaseStorage.instance.ref();
+      final timestamp = DateTime.now().microsecondsSinceEpoch;
+      final uploadRef = storageRef.child("profile_pictures/$userId/$timestamp");
 
-        await uploadRef.putFile(selectedImage);
+      final taskSnapshot = await uploadRef.putFile(selectedImage);
+
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      return null;
+    }
   }
 }
 

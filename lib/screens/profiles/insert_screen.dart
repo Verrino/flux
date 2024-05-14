@@ -22,7 +22,7 @@ class _InsertScreenState extends State<InsertScreen> {
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
 
-  XFile? _selectedImage;
+  File? _selectedImage;
   bool _isLoading = true;
   String _errorMessage = "";
 
@@ -37,6 +37,7 @@ class _InsertScreenState extends State<InsertScreen> {
       colorPallete = value.getBool('isDarkMode') ?? false
           ? DarkModeColorPallete()
           : LightModeColorPallete();
+      print(colorPallete.logo.assetName);
       setState(() {
         _isLoading = false;
       });
@@ -47,7 +48,12 @@ class _InsertScreenState extends State<InsertScreen> {
   Future<void> submit() async {
     try {
       if (_usernameController.text.isNotEmpty) {
-        final response = await ProfileService.addUser(_usernameController.text, _phoneController.text, _bioController.text);
+        String? profilePictureUrl;
+        if (_selectedImage != null) {
+          profilePictureUrl = await ProfileService.addPhotoProfile(_selectedImage as File);
+        }
+
+        final response = await ProfileService.addUser(_usernameController.text, _phoneController.text, _bioController.text, profilePictureUrl);
 
         if (response['isError']) {
           setState(() {
@@ -56,9 +62,6 @@ class _InsertScreenState extends State<InsertScreen> {
           return;
         }
 
-        if (_selectedImage != null) {
-          ProfileService.addPhotoProfile(_selectedImage as File);
-        }
         Navigator.popAndPushNamed(context, 'home');
       } else {
         setState(() {
@@ -97,25 +100,29 @@ class _InsertScreenState extends State<InsertScreen> {
                   padding: const EdgeInsets.only(top: 10),
                   child: GestureDetector(
                     onTap: () async {
-                      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+                      final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
                       
-                      if (image != null) {
+                      if (pickedImage != null) {
                         setState(() {
-                          _selectedImage = image;
+                          _selectedImage = File(pickedImage.path);
                         });
                       }
                     },
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
+                        _selectedImage != null ? 
                         CircleAvatar(
                           minRadius: 60,
                           maxRadius: 60,
-                          child: _selectedImage != null ? 
-                            Image.file(_selectedImage! as File, fit: BoxFit.cover,) : 
-                            Image(image: colorPallete.logo, fit: BoxFit.cover,),
+                          backgroundImage: FileImage(_selectedImage!)
+                        ) :
+                        CircleAvatar(
+                          minRadius: 60,
+                          maxRadius: 60,
+                          child: Image(image: colorPallete.logo),
                         ),
-                        const Icon(Icons.add, color: Colors.black26, size: 60,),
+                        if (_selectedImage == null) const Icon(Icons.add, color: Colors.black26, size: 60),
                       ],
                     ),
                   ),
