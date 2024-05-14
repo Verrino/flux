@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flux/screens/models/account.dart';
 
 class ProfileService {
   static Future<Map<String, dynamic>> addUser(String username, String phoneNumber, String bio, String? profileImageUrl) async {
@@ -72,6 +73,38 @@ class ProfileService {
     } catch (e) {
       return null;
     }
+  }
+
+  static Future<Map<String, dynamic>?> getAccountByUid(String uid) async {
+    Map<String, dynamic>? account;
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('accounts').doc(uid).get();
+      account = snapshot.data() as Map<String, dynamic>?;
+    } catch (e) {
+      return null;
+    }
+
+    return account;
+  }
+
+  static Future<String?> getUidByUsername(String username) async {
+    String? uid;
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('accounts').get();
+      
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        if (data['username'] == username) {
+          uid = doc.id;
+        }
+      }
+      
+    } catch (e) {
+      print('Error');
+      return null;
+    }
+
+    return uid;
   }
 }
 

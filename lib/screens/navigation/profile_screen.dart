@@ -1,23 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
 import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/navigation/profile_screen.dart';
-import 'package:flux/screens/widgets/post_box.dart';
-import 'package:flux/services/profile_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class ProfileScreen extends StatefulWidget {
+  final Account account;
+
+  const ProfileScreen({super.key, required this.account});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ProfileScreenState extends State<ProfileScreen> {
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
-  late Account account;
 
   bool _isLoading = true;
 
@@ -37,37 +34,27 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return value;
     });
-
-    Map<String, dynamic>? accountJson = await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid);
-
-    account = Account.fromJson(accountJson!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading 
-    ? const Center(child: CircularProgressIndicator())
-    : Scaffold(
-      backgroundColor: colorPallete.backgroundColor,
-      body: SafeArea(
-        child: Column(
+    return Scaffold(
+      body: _isLoading ?
+        const Center(child: CircularProgressIndicator()) :
+        Column(
           children: [
-            // Expanded(
-            //   child: StreamBuilder(
-            //     stream: ,
-            //   ),
-            // ),
-            PostBox(colorPallete: colorPallete, 
-              username: 'Tester', 
-              postDescription: 'post Description', 
-              pictureProfileUrl: 'https://firebasestorage.googleapis.com/v0/b/flux-test-255c8.appspot.com/o/profile_pictures%2FXUoAR0ZCTfb3YcRneh4l6FJyepf2%2F1715684388293715?alt=media&token=6562a4ad-12f7-45aa-b586-0cf8988e6f39', 
-              postedTime: DateTime.now(), 
-              countLikes: 0, 
-              countComments: 0,
+            Row(
+              children: [
+                Image.network(widget.account.profilePictureUrl, width: 60,),
+                Column(
+                  children: [
+                    Text(widget.account.username),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
-      ),
       bottomNavigationBar: Container(
         height: 50,
         child: Row(
@@ -76,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  
+                  Navigator.popAndPushNamed(context, 'home');
                 },
                 child: Column(
                   children: [
@@ -124,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(account: account!),));
+
                 },
                 child: Column(
                   children: [

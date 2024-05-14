@@ -5,6 +5,7 @@ import 'package:flux/screens/authentications/login_screen.dart';
 import 'package:flux/screens/authentications/register_screen.dart';
 import 'package:flux/screens/launch_app_screen.dart';
 import 'package:flux/screens/navigation/home_screen.dart';
+import 'package:flux/screens/navigation/profile_screen.dart';
 import 'package:flux/screens/profiles/insert_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
