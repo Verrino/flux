@@ -4,6 +4,7 @@ import 'package:flux/firebase_options.dart';
 import 'package:flux/screens/authentications/login_screen.dart';
 import 'package:flux/screens/authentications/register_screen.dart';
 import 'package:flux/screens/launch_app_screen.dart';
+import 'package:flux/screens/navigation/home_screen.dart';
 import 'package:flux/screens/profiles/insert_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +28,8 @@ class MainApp extends StatelessWidget {
         'launch': (context) => const LaunchAppScreen(),
         'login': (context) => const LoginScreen(),
         'register': (context) => const RegisterScreen(),
-        'insert':(context) => const InsertScreen(),
+        'insert': (context) => const InsertScreen(),
+        'home': (context) => const HomeScreen(),
       },
     );
   }
