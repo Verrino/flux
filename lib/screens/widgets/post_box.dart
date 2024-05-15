@@ -60,7 +60,7 @@ class PostBox extends StatelessWidget {
               ],
               Column(
                 children: [
-                  Text('$username $postDescription'),
+                  Text('$username $postDescription', style: TextStyle(color: colorPallete.fontColor)),
                 ],
               ),
               Row(
@@ -68,32 +68,33 @@ class PostBox extends StatelessWidget {
                   Column(
                     children: [
                       GestureDetector(
-                        child: const Icon(Icons.favorite_border),
+                        child: const Icon(Icons.favorite_border, color: Colors.red,),
                       ),
-                      Text(countLikes.toString()),
+                      Text(countLikes.toString(), style: TextStyle(color: colorPallete.fontColor)),
                     ],
                   ),
                   Column(
                     children: [
                       GestureDetector(
-                        child: const Icon(Icons.comment_rounded),
+                        child: Icon(Icons.comment_rounded, color: colorPallete.fontColor),
                       ),
-                      Text(countComments.toString()),
+                      Text(countComments.toString(), style: TextStyle(color: colorPallete.fontColor)),
                     ],
                   ),
                   GestureDetector(
-                    child: const Icon(Icons.share),
+                    child: Icon(Icons.share, color: colorPallete.fontColor),
                   ),
                   GestureDetector(
-                    child: const Icon(Icons.bookmark),
+                    child: Icon(Icons.bookmark, color: colorPallete.fontColor),
                   ),
                 ],
               ),
             ],
           ),
-          InkWell(
-            child: Icon(Icons.menu),
-          )
+          PopupMenuButton(
+            itemBuilder: (context) => [],
+            iconColor: colorPallete.fontColor,
+          ),
         ],
       ),
     );
