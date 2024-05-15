@@ -35,7 +35,7 @@ class _LaunchAppScreenState extends State<LaunchAppScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 5)).then(
+    Future.delayed(const Duration(seconds: 2)).then(
       (value) {
         if (FirebaseAuth.instance.currentUser != null) {
           Navigator.popAndPushNamed(context, 'home');

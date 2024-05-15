@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text, _passwordController.text);
 
       if (FirebaseAuth.instance.currentUser != null) {
-        Navigator.popAndPushNamed(context, 'insert');
+        Navigator.popAndPushNamed(context, 'home');
       }
     } catch (e) {
       print(e);

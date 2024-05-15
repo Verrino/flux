@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/firebase_options.dart';
@@ -5,6 +6,7 @@ import 'package:flux/screens/authentications/login_screen.dart';
 import 'package:flux/screens/authentications/register_screen.dart';
 import 'package:flux/screens/launch_app_screen.dart';
 import 'package:flux/screens/navigation/home_screen.dart';
+import 'package:flux/screens/navigation/settings_screen.dart';
 import 'package:flux/screens/profiles/insert_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +32,7 @@ class MainApp extends StatelessWidget {
         'register': (context) => const RegisterScreen(),
         'insert': (context) => const InsertScreen(),
         'home': (context) => const HomeScreen(),
+        'settings':(context) => const SettingsScreen(),
       },
     );
   }

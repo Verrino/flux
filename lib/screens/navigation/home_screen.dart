@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
+import 'package:flux/screens/models/account.dart';
+import 'package:flux/screens/navigation/profile_screen.dart';
 import 'package:flux/screens/widgets/post_box.dart';
+import 'package:flux/services/profile_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
+  late Account account;
 
   bool _isLoading = true;
 
@@ -33,6 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return value;
     });
+
+    Map<String, dynamic>? accountJson = await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid);
+
+    account = Account.fromJson(accountJson!);
   }
 
   @override
@@ -116,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, 'profile');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(account: account!),));
                 },
                 child: Column(
                   children: [
