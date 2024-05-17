@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
@@ -15,11 +17,13 @@ class PostingScreen extends StatefulWidget {
 
 class _PostingScreenState extends State<PostingScreen> {
   final TextEditingController _descriptionController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
 
   bool _isLoading = true;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -56,12 +60,13 @@ class _PostingScreenState extends State<PostingScreen> {
                 style: ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(colorPallete.buttonColor),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  String? postingImageUrl = await PostService.addPostingImage(_selectedImage);
                   PostService.post(
                     Posting(
                       location: 'Palembang', 
                       postingDescription: _descriptionController.text,
-                      postingImageUrl: '',
+                      postingImageUrl: postingImageUrl,
                       countComments: 0,
                       countLikes: 0,
                       postedTime: DateTime.now(),
@@ -87,6 +92,15 @@ class _PostingScreenState extends State<PostingScreen> {
                 Text('Media', style: TextStyle(color: colorPallete.fontColor, fontSize: 18)),
                 Center(
                   child: GestureDetector(
+                    onTap: () async {
+                      final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+
+                      if (pickedImage != null) {
+                        setState(() {
+                          _selectedImage = File(pickedImage.path);
+                        });
+                      }
+                    },
                     child: Container(
                       width: 340,
                       height: 340,
@@ -94,14 +108,16 @@ class _PostingScreenState extends State<PostingScreen> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.black26
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_photo_alternate_outlined, color: colorPallete.fontColor.withOpacity(0.4), size: 60),
-                          Text('Add media', style: TextStyle(fontSize: 18, color: colorPallete.fontColor.withOpacity(0.4)))
-                        ],
-                      ),
+                      child: _selectedImage == null ? 
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_photo_alternate_outlined, color: colorPallete.fontColor.withOpacity(0.4), size: 60),
+                            Text('Add media', style: TextStyle(fontSize: 18, color: colorPallete.fontColor.withOpacity(0.4)))
+                          ],
+                        ) :
+                        Image.file(_selectedImage!),
                     ),
                   ),
                 ),

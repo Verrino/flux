@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flux/screens/models/posting.dart';
 
 class PostService {
@@ -39,4 +43,24 @@ class PostService {
       'postedTime': DateTime.now().toString(),
     });
    }
+
+   static Future<String?> addPostingImage(File? selectedImage) async {
+    try {
+      if (selectedImage == null) {
+        return null;
+      }
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final storageRef = FirebaseStorage.instance.ref();
+      final timestamp = DateTime.now().microsecondsSinceEpoch;
+      final uploadRef = storageRef.child("posts/$userId/$timestamp");
+
+      final taskSnapshot = await uploadRef.putFile(selectedImage);
+
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      return null;
+    }
+  }
 }

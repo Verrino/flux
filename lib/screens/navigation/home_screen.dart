@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         post: post,
                       ));
                   }
-                  return Column(
+                  return ListView(
                     children: postingBoxes,
                   );
                 },
