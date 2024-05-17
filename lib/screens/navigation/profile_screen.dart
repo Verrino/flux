@@ -34,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       colorPallete = value.getBool('isDarkMode') ?? false
           ? DarkModeColorPallete()
           : LightModeColorPallete();
-        account = (await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid))!;
+      account = (await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid))!;
       setState(() {
         _isLoading = false;
       });
@@ -94,21 +94,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   Text(widget.account.bio, style: TextStyle(color: colorPallete.fontColor)),
-                  GestureDetector(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 120),
-                      decoration: BoxDecoration(
-                        color: colorPallete.buttonColor,
-                        borderRadius: BorderRadius.circular(20),
+                  if (account.username == widget.account.username)
+                    GestureDetector(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 120),
+                        decoration: BoxDecoration(
+                          color: colorPallete.buttonColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Edit Profile',
+                          style: TextStyle(
+                            color: colorPallete.fontColor,
+                          ),
+                          ),
                       ),
-                      child: Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          color: colorPallete.fontColor,
-                        ),
-                        ),
                     ),
-                  ),
+                  if (account.username != widget.account.username)
+                    GestureDetector(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 120),
+                        decoration: BoxDecoration(
+                          color: colorPallete.buttonColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Follow',
+                          style: TextStyle(
+                            color: colorPallete.fontColor,
+                          ),
+                          ),
+                      ),
+                    ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [

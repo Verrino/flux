@@ -19,7 +19,25 @@ class PostService {
             final data = value as Map<Object?, Object?>;
             Map<String, dynamic> accountData = {};
             data.forEach((key, value) {
-              accountData[key.toString()] = value;
+              if (key.toString() == 'likes') {
+                final dataLikes = value as List<Object?>;
+                List<String> likes = [] ;
+                for (var like in dataLikes) {
+                  likes.add(like.toString());
+                }
+                accountData[key.toString()] = likes;
+              }
+              else if (key.toString() == 'comments') {
+                final dataComments = value as Map<Object?, Object?>;
+                Map<String, String> comments = {};
+                dataComments.forEach((key, value) {
+                  comments[key.toString()] = value.toString();
+                });
+                accountData[key.toString()] = comments;
+              }
+              else {
+                accountData[key.toString()] = value;
+              }
             });
             accountData['post_id'] = key.toString();
             items.add(Posting.fromJson(accountData));
@@ -38,8 +56,8 @@ class PostService {
       'location': posting.location,
       'posting_image_url': posting.postingImageUrl,
       'description': posting.postingDescription,
-      'count_likes': posting.countLikes,
-      'count_comments': posting.countComments,
+      'likes': posting.likes,
+      'comments': posting.comments,
       'postedTime': DateTime.now().toString(),
     });
    }
@@ -61,6 +79,64 @@ class PostService {
       return downloadUrl;
     } catch (e) {
       return null;
+    }
+  }
+
+  static Future<void> like(String uid, Posting posting) async {
+    try {
+      DataSnapshot snapshot = await _database.child(posting.postId!).get();
+      Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+      List<Object?> dataLikes = data['likes'] as List<Object?>;
+      List<String> likes = [];
+      for (var like in dataLikes) {
+        likes.add(like.toString());
+      }
+      likes.add(uid);
+      await _database.child(posting.postId!).update(
+        {'likes': likes}
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<void> dislike(String uid, Posting posting) async {
+    try {
+      DataSnapshot snapshot = await _database.child(posting.postId!).get();
+      Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+      List<Object?> dataLikes = data['likes'] as List<Object?>;
+      List<String> likes = [];
+      for (var like in dataLikes) {
+        likes.add(like.toString());
+      }
+      likes.remove(uid);
+      await _database.child(posting.postId!).update(
+        {'likes': likes}
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Future<void> comment(String uid, String comment, Posting posting) async {
+    try {
+      DataSnapshot snapshot = await _database.child(posting.postId!).get();
+      Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+      Map<String, dynamic> comments = {};
+      data.forEach((key, value) {
+        if (key.toString() == 'comments') {
+          final temp = value as Map<Object?, Object?>;
+          temp.forEach((key, value) {
+            comments[key.toString()] = value.toString();
+          });
+        }
+      });
+      comments[uid] = comment;
+      await _database.child(posting.postId!).update(
+        {'comments': comments}
+      );
+    } catch (e) {
+      print("error sending comment");
     }
   }
 }
