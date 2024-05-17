@@ -5,7 +5,7 @@ class Posting {
   final String postingDescription;
   final String location;
   final List<String> likes;
-  final Map<String, dynamic> comments;
+  final Map<String, List<dynamic>> comments;
   final DateTime postedTime;
 
   Posting(

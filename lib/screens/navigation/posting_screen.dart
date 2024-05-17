@@ -74,8 +74,7 @@ class _PostingScreenState extends State<PostingScreen> {
                           postingDescription: _descriptionController.text,
                           postingImageUrl: postingImageUrl,
                           comments: {
-                            (FirebaseAuth.instance.currentUser!.uid):
-                                _descriptionController.text
+                            (FirebaseAuth.instance.currentUser!.uid): [""],
                           },
                           likes: [FirebaseAuth.instance.currentUser!.uid],
                           postedTime: DateTime.now(),

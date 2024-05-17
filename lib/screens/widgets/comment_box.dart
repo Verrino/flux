@@ -40,6 +40,7 @@ class _CommentBoxState extends State<CommentBox> {
     return _isLoading
         ? Container()
         : Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             child: Row(
               children: [
                 if (widget.comment.isNotEmpty) ...[

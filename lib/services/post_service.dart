@@ -30,9 +30,14 @@ class PostService {
                 accountData[key.toString()] = likes;
               } else if (key.toString() == 'comments') {
                 final dataComments = value as Map<Object?, Object?>;
-                Map<String, String> comments = {};
+                Map<String, List<String>> comments = {};
                 dataComments.forEach((key, value) {
-                  comments[key.toString()] = value.toString();
+                  final temp = value as List<Object?>;
+                  List<String> listComments = [];
+                  for (var comment in temp) {
+                    listComments.add(comment.toString());
+                  }
+                  comments[key.toString()] = listComments;
                 });
                 accountData[key.toString()] = comments;
               } else {
@@ -119,19 +124,72 @@ class PostService {
     try {
       DataSnapshot snapshot = await _database.child(posting.postId!).get();
       Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
-      Map<String, dynamic> comments = {};
+      Map<String, dynamic> mapComments = {};
       data.forEach((key, value) {
         if (key.toString() == 'comments') {
           final temp = value as Map<Object?, Object?>;
+          bool isExist = false;
+          bool isEmpty = false;
           temp.forEach((key, value) {
-            comments[key.toString()] = value.toString();
+            List<String> comments = [];
+            final eachUid = key.toString();
+            final listComments = value as List<Object?>;
+
+            if (eachUid == uid) {
+              isExist = true;
+              if (listComments[0].toString().isNotEmpty) {
+                for (var commentMessage in listComments) {
+                  comments.add(commentMessage.toString());
+                }
+              }
+              comments.add(comment);
+            } else {
+              if (listComments[0].toString().isNotEmpty) {
+                for (var commentMessage in listComments) {
+                  comments.add(commentMessage.toString());
+                }
+              }
+            }
+            mapComments[eachUid] = comments;
           });
+
+          if (!isExist) {
+            mapComments[uid] = [comment];
+          }
         }
       });
-      comments[uid] = comment;
-      await _database.child(posting.postId!).update({'comments': comments});
+      await _database.child(posting.postId!).update({'comments': mapComments});
     } catch (e) {
       print("error sending comment");
     }
+  }
+
+  static Future<int> getCommentsLength(Posting post) async {
+    int length = 0;
+    try {
+      DataSnapshot snapshot = await _database.child(post.postId!).get();
+      Map<Object?, Object?> data = snapshot.value as Map<Object?, Object?>;
+
+      data.forEach((key, value) {
+        if (key.toString() == 'comments') {
+          final temp = value as Map<Object?, Object?>;
+          List<String> comments = [];
+          temp.forEach((key, value) {
+            final listComments = value as List<Object?>;
+            if (listComments[0].toString().isEmpty) {
+              return;
+            } else {
+              for (var commentMessage in listComments) {
+                length++;
+              }
+            }
+          });
+        }
+      });
+    } catch (e) {}
+
+    print(length);
+
+    return length;
   }
 }

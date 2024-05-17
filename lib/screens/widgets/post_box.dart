@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flux/color_pallete.dart';
@@ -32,6 +33,7 @@ class _PostBoxState extends State<PostBox> {
   bool? _isLiked;
 
   bool _isLoading = true;
+  int commentsLength = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -49,6 +51,10 @@ class _PostBoxState extends State<PostBox> {
         _isLiked = false;
       });
     }
+    commentsLength = await PostService.getCommentsLength(widget.post);
+    setState(() {
+      commentsLength = commentsLength;
+    });
     account ??=
         await ProfileService.getAccountByUid(widget.uid).whenComplete(() {
       setState(() {
@@ -123,14 +129,22 @@ class _PostBoxState extends State<PostBox> {
                           child: Image.network(widget.post.postingImageUrl!),
                         ),
                     ],
-                    Column(
+                    Text.rich(TextSpan(
                       children: [
-                        Text(
-                            '${account!.username} ${widget.post.postingDescription}',
-                            style: TextStyle(
-                                color: widget.colorPallete.fontColor)),
+                        TextSpan(
+                          text: account!.username,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: widget.colorPallete.fontColor),
+                        ),
+                        const TextSpan(text: "  "),
+                        TextSpan(
+                          text: widget.post.postingDescription,
+                          style:
+                              TextStyle(color: widget.colorPallete.fontColor),
+                        ),
                       ],
-                    ),
+                    )),
                     Row(
                       children: [
                         Column(
@@ -184,20 +198,39 @@ class _PostBoxState extends State<PostBox> {
                                       TextEditingController commentController =
                                           TextEditingController();
                                       List<Widget> children = [];
+                                      children.add(
+                                        Container(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 5),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: widget
+                                                    .colorPallete.fontColor
+                                                    .withOpacity(0.2),
+                                              ),
+                                            ),
+                                          ),
+                                          child: CommentBox(
+                                            uid: widget.post.uid!,
+                                            colorPallete: widget.colorPallete,
+                                            comment:
+                                                widget.post.postingDescription,
+                                          ),
+                                        ),
+                                      );
                                       widget.post.comments
                                           .forEach((key, value) {
-                                        children.add(CommentBox(
-                                            uid: key,
-                                            colorPallete: widget.colorPallete,
-                                            comment: value));
-                                        children
-                                            .add(const SizedBox(height: 10));
+                                        for (String comment in value) {
+                                          children.add(CommentBox(
+                                              uid: key,
+                                              colorPallete: widget.colorPallete,
+                                              comment: comment));
+                                        }
                                       });
                                       return Container(
                                         padding: EdgeInsets.only(
                                             top: 20,
-                                            left: 12,
-                                            right: 12,
                                             bottom: MediaQuery.of(context)
                                                 .viewInsets
                                                 .bottom),
@@ -221,8 +254,18 @@ class _PostBoxState extends State<PostBox> {
                                               MainAxisAlignment.spaceBetween,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Column(
-                                              children: children,
+                                            Flexible(
+                                              child: Container(
+                                                constraints:
+                                                    const BoxConstraints(
+                                                  maxHeight: 400,
+                                                ),
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    children: children,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                             TextField(
                                               controller: commentController,
@@ -234,11 +277,22 @@ class _PostBoxState extends State<PostBox> {
                                                       color: widget.colorPallete
                                                           .fontColor),
                                                   onPressed: () {
-                                                    PostService.comment(
-                                                        FirebaseAuth.instance
-                                                            .currentUser!.uid,
-                                                        commentController.text,
-                                                        widget.post);
+                                                    if (commentController
+                                                        .text.isNotEmpty) {
+                                                      PostService.comment(
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid,
+                                                              commentController
+                                                                  .text,
+                                                              widget.post)
+                                                          .whenComplete(() {
+                                                        initialize();
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      });
+                                                    }
                                                   },
                                                 ),
                                                 border: OutlineInputBorder(
@@ -262,9 +316,13 @@ class _PostBoxState extends State<PostBox> {
                               child: Icon(Icons.comment_rounded,
                                   color: widget.colorPallete.fontColor),
                             ),
-                            Text(widget.post.comments.length.toString(),
-                                style: TextStyle(
-                                    color: widget.colorPallete.fontColor)),
+                            if (widget.post.comments[widget.uid]![0]
+                                .toString()
+                                .isNotEmpty) ...[
+                              Text(commentsLength.toString(),
+                                  style: TextStyle(
+                                      color: widget.colorPallete.fontColor)),
+                            ]
                           ],
                         ),
                         GestureDetector(
