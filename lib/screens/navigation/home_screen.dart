@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
 import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/navigation/profile_screen.dart';
+import 'package:flux/screens/models/posting.dart';
+import 'package:flux/screens/widgets/bottom_navigation.dart';
 import 'package:flux/screens/widgets/post_box.dart';
+import 'package:flux/services/post_service.dart';
 import 'package:flux/services/profile_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,19 +30,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void initialize() async {
-    prefs = await SharedPreferences.getInstance().then((value) {
+    prefs = await SharedPreferences.getInstance().then((value) async {
       colorPallete = value.getBool('isDarkMode') ?? false
           ? DarkModeColorPallete()
           : LightModeColorPallete();
+      account = (await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid))!;
+
       setState(() {
         _isLoading = false;
       });
       return value;
     });
 
-    Map<String, dynamic>? accountJson = await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid);
-
-    account = Account.fromJson(accountJson!);
   }
 
   @override
@@ -52,94 +53,31 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Expanded(
-            //   child: StreamBuilder(
-            //     stream: ,
-            //   ),
-            // ),
-            PostBox(colorPallete: colorPallete, 
-              username: 'Tester', 
-              postDescription: 'post Description', 
-              pictureProfileUrl: 'https://firebasestorage.googleapis.com/v0/b/flux-test-255c8.appspot.com/o/profile_pictures%2FXUoAR0ZCTfb3YcRneh4l6FJyepf2%2F1715684388293715?alt=media&token=6562a4ad-12f7-45aa-b586-0cf8988e6f39', 
-              postedTime: DateTime.now(), 
-              countLikes: 0, 
-              countComments: 0,
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: 50,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
             Expanded(
-              child: InkWell(
-                onTap: () {
-                  
+              child: StreamBuilder(
+                stream: PostService.getPostingList(),
+                builder: (context, snapshot) {
+                  // ignore: unnecessary_cast
+                  List<Posting> posts = (snapshot.data ?? List<Posting>.empty()) as List<Posting>;
+                  List<Widget> postingBoxes = [];
+                  for (Posting post in posts) {
+                    postingBoxes.add(
+                      PostBox(
+                        colorPallete: colorPallete,
+                        uid: post.uid!,
+                        post: post,
+                      ));
+                  }
+                  return Column(
+                    children: postingBoxes,
+                  );
                 },
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.home,
-                      color: colorPallete.fontColor,
-                      size: 32,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  // Navigator.pushNamed(context, '');
-                },
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      color: colorPallete.fontColor,
-                      size: 32,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  
-                },
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.notifications,
-                      color: colorPallete.fontColor,
-                      size: 32,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(account: account!),));
-                },
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.person,
-                      color: colorPallete.fontColor,
-                      size: 32,
-                    ),
-                  ],
-                ),
               ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigation(colorPallete: colorPallete, account: account),
     );
   }
 }
