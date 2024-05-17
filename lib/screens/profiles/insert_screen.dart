@@ -26,7 +26,7 @@ class _InsertScreenState extends State<InsertScreen> {
   bool _isLoading = true;
   String _errorMessage = "";
 
-   @override
+  @override
   void initState() {
     super.initState();
     initialize();
@@ -50,10 +50,12 @@ class _InsertScreenState extends State<InsertScreen> {
       if (_usernameController.text.isNotEmpty) {
         String? profilePictureUrl;
         if (_selectedImage != null) {
-          profilePictureUrl = await ProfileService.addPhotoProfile(_selectedImage as File);
+          profilePictureUrl =
+              await ProfileService.addPhotoProfile(_selectedImage as File);
         }
 
-        final response = await ProfileService.addUser(_usernameController.text, _phoneController.text, _bioController.text, profilePictureUrl);
+        final response = await ProfileService.addUser(_usernameController.text,
+            _phoneController.text, _bioController.text, profilePictureUrl);
 
         if (response['isError']) {
           setState(() {
@@ -69,109 +71,113 @@ class _InsertScreenState extends State<InsertScreen> {
         });
         return;
       }
-
-
     } catch (e) {
-     print(e); 
+      print(e);
     }
     return;
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading 
-    ? const Center(child: CircularProgressIndicator()) : 
-    Scaffold(
-      appBar: AppBar(
-        actions: [
-          TextButton(onPressed: () {
-            submit();
-          }, child: const Text('Done')),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: GestureDetector(
-                    onTap: () async {
-                      final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
-                      
-                      if (pickedImage != null) {
-                        setState(() {
-                          _selectedImage = File(pickedImage.path);
-                        });
-                      }
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            appBar: AppBar(
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      submit();
                     },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        _selectedImage != null ? 
-                        CircleAvatar(
-                          minRadius: 60,
-                          maxRadius: 60,
-                          backgroundImage: FileImage(_selectedImage!)
-                        ) :
-                        CircleAvatar(
-                          minRadius: 60,
-                          maxRadius: 60,
-                          child: Image(image: colorPallete.logo),
-                        ),
-                        if (_selectedImage == null) const Icon(Icons.add, color: Colors.black26, size: 60),
-                      ],
-                    ),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (_errorMessage.isNotEmpty) Text(_errorMessage, style: const TextStyle(color: Colors.red)),
-                    const Row(
-                      children: [
-                        Text('Username'),
-                        Tooltip(
-                          enableTapToDismiss: true,
-                          verticalOffset: 10,
-                          triggerMode: TooltipTriggerMode.tap,
-                          message: "required",
-                          child: Text(" *"),
-                        ),
-                      ],
-                    ),
-                    TextField(
-                      controller: _usernameController,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Phone Number'),
-                    TextField(
-                      controller: _phoneController,
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Bio'),
-                    TextField(
-                      controller: _bioController,
-                    ),
-                  ],
-                ),
+                    child: const Text('Done')),
               ],
             ),
-          ],
-        
-        ),
-      ),
-    );
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ListView(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: GestureDetector(
+                          onTap: () async {
+                            final pickedImage = await _picker.pickImage(
+                                source: ImageSource.gallery);
+
+                            if (pickedImage != null) {
+                              setState(() {
+                                _selectedImage = File(pickedImage.path);
+                              });
+                            }
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              _selectedImage != null
+                                  ? CircleAvatar(
+                                      minRadius: 60,
+                                      maxRadius: 60,
+                                      backgroundImage:
+                                          FileImage(_selectedImage!))
+                                  : CircleAvatar(
+                                      minRadius: 60,
+                                      maxRadius: 60,
+                                      child: Image(image: colorPallete.logo),
+                                    ),
+                              if (_selectedImage == null)
+                                const Icon(Icons.add,
+                                    color: Colors.black26, size: 60),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_errorMessage.isNotEmpty)
+                            Text(_errorMessage,
+                                style: const TextStyle(color: Colors.red)),
+                          const Row(
+                            children: [
+                              Text('Username'),
+                              Tooltip(
+                                enableTapToDismiss: true,
+                                verticalOffset: 10,
+                                triggerMode: TooltipTriggerMode.tap,
+                                message: "required",
+                                child: Text(" *"),
+                              ),
+                            ],
+                          ),
+                          TextField(
+                            controller: _usernameController,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Phone Number'),
+                          TextField(
+                            controller: _phoneController,
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Bio'),
+                          TextField(
+                            controller: _bioController,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 }

@@ -34,50 +34,52 @@ class _HomeScreenState extends State<HomeScreen> {
       colorPallete = value.getBool('isDarkMode') ?? false
           ? DarkModeColorPallete()
           : LightModeColorPallete();
-      account = (await ProfileService.getAccountByUid(FirebaseAuth.instance.currentUser!.uid))!;
+      account = (await ProfileService.getAccountByUid(
+          FirebaseAuth.instance.currentUser!.uid))!;
 
       setState(() {
         _isLoading = false;
       });
       return value;
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading 
-    ? const Center(child: CircularProgressIndicator())
-    : Scaffold(
-      backgroundColor: colorPallete.backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder(
-                stream: PostService.getPostingList(),
-                builder: (context, snapshot) {
-                  // ignore: unnecessary_cast
-                  List<Posting> posts = (snapshot.data ?? List<Posting>.empty()) as List<Posting>;
-                  List<Widget> postingBoxes = [];
-                  for (Posting post in posts) {
-                    postingBoxes.add(
-                      PostBox(
-                        colorPallete: colorPallete,
-                        uid: post.uid!,
-                        post: post,
-                      ));
-                  }
-                  return ListView(
-                    children: postingBoxes,
-                  );
-                },
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            backgroundColor: colorPallete.backgroundColor,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: StreamBuilder(
+                      stream: PostService.getPostingList(),
+                      builder: (context, snapshot) {
+                        // ignore: unnecessary_cast
+                        List<Posting> posts = (snapshot.data ??
+                            List<Posting>.empty()) as List<Posting>;
+                        List<Widget> postingBoxes = [];
+                        for (Posting post in posts) {
+                          postingBoxes.add(PostBox(
+                            colorPallete: colorPallete,
+                            uid: post.uid!,
+                            post: post,
+                          ));
+                          postingBoxes.add(const SizedBox(height: 10));
+                        }
+                        return ListView(
+                          children: postingBoxes,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigation(colorPallete: colorPallete, account: account),
-    );
+            bottomNavigationBar:
+                BottomNavigation(colorPallete: colorPallete, account: account),
+          );
   }
 }

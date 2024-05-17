@@ -37,45 +37,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading ?
-      const Center(child: CircularProgressIndicator()) :
-      Scaffold(
-        backgroundColor: colorPallete.backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            'Settings', 
-            style: TextStyle(color: colorPallete.fontColor),
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: colorPallete.fontColor),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          backgroundColor: colorPallete.backgroundColor,
-        ),
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            backgroundColor: colorPallete.backgroundColor,
+            appBar: AppBar(
+              title: Text(
+                'Settings',
+                style: TextStyle(color: colorPallete.fontColor),
+              ),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: colorPallete.fontColor),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              backgroundColor: colorPallete.backgroundColor,
+            ),
+            body: Column(
               children: [
-                Text('Dark Mode', style: TextStyle(color: colorPallete.fontColor)),
-                Switch(
-                  value: _isDarkMode!, 
-                  onChanged: (value) {
-                    setState(() {
-                      _isDarkMode = !_isDarkMode!;
-                      colorPallete = _isDarkMode!
-                                    ? DarkModeColorPallete()
-                                    : LightModeColorPallete();
-                    });
-                    prefs.setBool('isDarkMode', _isDarkMode!);
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Dark Mode',
+                        style: TextStyle(color: colorPallete.fontColor)),
+                    Switch(
+                      value: _isDarkMode!,
+                      onChanged: (value) {
+                        setState(() {
+                          _isDarkMode = !_isDarkMode!;
+                          colorPallete = _isDarkMode!
+                              ? DarkModeColorPallete()
+                              : LightModeColorPallete();
+                        });
+                        prefs.setBool('isDarkMode', _isDarkMode!);
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      );
+          );
   }
 }

@@ -9,24 +9,24 @@ class Posting {
   final DateTime postedTime;
 
   Posting(
-    {required this.postingDescription, 
-    required this.location, 
-    this.postingImageUrl, 
-    required this.likes,
-    required this.comments,
-    required this.postedTime,
-    required this.postId,
-    required this.uid});
+      {required this.postingDescription,
+      required this.location,
+      this.postingImageUrl,
+      required this.likes,
+      required this.comments,
+      required this.postedTime,
+      required this.postId,
+      required this.uid});
 
   factory Posting.fromJson(Map<String, dynamic> json) {
     return Posting(
       postingDescription: json['description'],
       location: json['location'],
-      postingImageUrl: json['posting_image_url'], 
+      postingImageUrl: json['posting_image_url'],
       likes: json['likes'] as List<String>,
       comments: json['comments'],
-      postedTime: DateTime.now(), 
-      postId: json['post_id'], 
+      postedTime: DateTime.now(),
+      postId: json['post_id'],
       uid: json['uid'],
     );
   }

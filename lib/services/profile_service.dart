@@ -6,19 +6,25 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flux/screens/models/account.dart';
 
 class ProfileService {
-  static Future<Map<String, dynamic>> addUser(String username, String phoneNumber, String bio, String? profileImageUrl) async {
+  static Future<Map<String, dynamic>> addUser(String username,
+      String phoneNumber, String bio, String? profileImageUrl) async {
     try {
       var isAccountMade = false;
 
-      await FirebaseFirestore.instance.collection('accounts').doc(FirebaseAuth.instance.currentUser!.uid).get().then((value) {
+      await FirebaseFirestore.instance
+          .collection('accounts')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((value) {
         isAccountMade = value.data() != null;
       });
 
       if (isAccountMade) {
         return {'isError': true, 'message': "Account has been made."};
       }
-      
-      final snapshot = await FirebaseFirestore.instance.collection('accounts').get();
+
+      final snapshot =
+          await FirebaseFirestore.instance.collection('accounts').get();
 
       var isUsernameTaken = false;
 
@@ -33,21 +39,24 @@ class ProfileService {
         return {'isError': true, 'message': "Username has been taken."};
       }
 
-      await FirebaseFirestore.instance.collection('accounts').doc(FirebaseAuth.instance.currentUser!.uid)
-        .set(
-          {
-            "username": username,
-            "phone_number": phoneNumber, 
-            "bio": bio,
-            "followings": [],
-            "followers": [],
-            "profilePictureUrl": profileImageUrl ?? '',
-            "posts": 0,
-          }
-        ).whenComplete(() {
-          print("Submit Selesai");
-        });
-      return {'isError': false, 'message': "Account has been made successfully."};
+      await FirebaseFirestore.instance
+          .collection('accounts')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        "username": username,
+        "phone_number": phoneNumber,
+        "bio": bio,
+        "followings": [],
+        "followers": [],
+        "profilePictureUrl": profileImageUrl ?? '',
+        "posts": 0,
+      }).whenComplete(() {
+        print("Submit Selesai");
+      });
+      return {
+        'isError': false,
+        'message': "Account has been made successfully."
+      };
     } catch (e) {
       print(e);
     }
@@ -78,7 +87,10 @@ class ProfileService {
   static Future<Account?> getAccountByUid(String uid) async {
     Account? account;
     try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('accounts').doc(uid).get();
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('accounts')
+          .doc(uid)
+          .get();
       final data = snapshot.data() as Map<String, dynamic>?;
       account = Account.fromJson(data!);
     } catch (e) {
@@ -91,15 +103,15 @@ class ProfileService {
   static Future<String?> getUidByUsername(String username) async {
     String? uid;
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('accounts').get();
-      
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('accounts').get();
+
       for (var doc in snapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         if (data['username'] == username) {
           uid = doc.id;
         }
       }
-      
     } catch (e) {
       print('Error');
       return null;
@@ -108,4 +120,3 @@ class ProfileService {
     return uid;
   }
 }
-
