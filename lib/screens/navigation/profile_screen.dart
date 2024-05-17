@@ -2,8 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
 import 'package:flux/screens/models/account.dart';
+import 'package:flux/screens/models/posting.dart';
 import 'package:flux/screens/widgets/bottom_navigation.dart';
+import 'package:flux/screens/widgets/post_box.dart';
 import 'package:flux/services/authentication_service.dart';
+import 'package:flux/services/post_service.dart';
 import 'package:flux/services/profile_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,8 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
   late Account account;
+  late String accountUid;
 
   bool _isLoading = true;
+  String selectedOption = "posted";
 
   @override
   void initState() {
@@ -36,6 +41,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : LightModeColorPallete();
       account = (await ProfileService.getAccountByUid(
           FirebaseAuth.instance.currentUser!.uid))!;
+      accountUid =
+          (await ProfileService.getUidByUsername(widget.account.username))!;
       setState(() {
         _isLoading = false;
       });
@@ -152,25 +159,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedOption = "posted";
+                              });
+                            },
                             child: Text(
                               'Posted',
                               style: TextStyle(
                                 color: colorPallete.fontColor,
+                                fontWeight: selectedOption == "posted"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 fontSize: 18,
                               ),
                             ),
                           ),
                           GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedOption = "liked";
+                              });
+                            },
                             child: Text(
                               'Liked',
                               style: TextStyle(
                                 color: colorPallete.fontColor,
+                                fontWeight: selectedOption == "liked"
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 fontSize: 18,
                               ),
                             ),
                           ),
                         ],
                       ),
+                      if (selectedOption == "posted") ...[
+                        Expanded(
+                          child: StreamBuilder(
+                            stream: PostService.getPostingList(),
+                            builder: (context, snapshot) {
+                              // ignore: unnecessary_cast
+                              List<Posting> posts = (snapshot.data ??
+                                  List<Posting>.empty()) as List<Posting>;
+                              List<Widget> postingBoxes = [];
+                              for (Posting post in posts) {
+                                if (post.uid == accountUid) {
+                                  postingBoxes.add(PostBox(
+                                    colorPallete: colorPallete,
+                                    uid: post.uid!,
+                                    post: post,
+                                  ));
+                                  postingBoxes.add(const SizedBox(height: 10));
+                                }
+                              }
+                              return ListView(
+                                children: postingBoxes,
+                              );
+                            },
+                          ),
+                        ),
+                      ]
                     ],
                   ),
                   PopupMenuButton(

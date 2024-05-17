@@ -188,8 +188,6 @@ class PostService {
       });
     } catch (e) {}
 
-    print(length);
-
     return length;
   }
 }
