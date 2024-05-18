@@ -32,8 +32,8 @@ class MainApp extends StatelessWidget {
         'register': (context) => const RegisterScreen(),
         'insert': (context) => const InsertScreen(),
         'home': (context) => const HomeScreen(),
-        'settings':(context) => const SettingsScreen(),
-        'post':(context) => const PostingScreen(),
+        'settings': (context) => const SettingsScreen(),
+        'post': (context) => const PostingScreen(),
       },
     );
   }

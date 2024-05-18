@@ -39,8 +39,7 @@ class _LaunchAppScreenState extends State<LaunchAppScreen> {
       (value) {
         if (FirebaseAuth.instance.currentUser != null) {
           Navigator.popAndPushNamed(context, 'home');
-        }
-        else {
+        } else {
           Navigator.popAndPushNamed(context, 'login');
         }
       },
