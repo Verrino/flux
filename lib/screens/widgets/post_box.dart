@@ -84,7 +84,7 @@ class _PostBoxState extends State<PostBox> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    ProfileScreen(account: account!)));
+                                    ProfileScreen(profileUid: widget.uid)));
                       },
                       child: Row(
                         children: [

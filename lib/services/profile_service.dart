@@ -119,4 +119,31 @@ class ProfileService {
 
     return uid;
   }
+
+  static Future<void> updateAccount(
+      String uid,
+      String? username,
+      String? phoneNumber,
+      String? bio,
+      List<String>? followers,
+      List<String>? followings,
+      String? profilePictureUrl,
+      int? posts) async {
+    Account? account = await getAccountByUid(uid);
+    try {
+      Map<String, dynamic> updatedData = {
+        'username': username ?? account!.username,
+        'phone_number': phoneNumber ?? account!.phoneNumber,
+        'bio': bio ?? account!.bio,
+        'followers': followers ?? account!.followers,
+        'followings': followings ?? account!.followings,
+        'profilePictureUrl': profilePictureUrl ?? account!.profilePictureUrl,
+        'posts': posts ?? account!.posts
+      };
+      await FirebaseFirestore.instance
+          .collection('accounts')
+          .doc(uid)
+          .update(updatedData);
+    } catch (e) {}
+  }
 }

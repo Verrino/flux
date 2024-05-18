@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
 import 'package:flux/screens/navigation/profile_screen.dart';
 
 class BottomNavigation extends StatelessWidget {
   final ColorPallete colorPallete;
-  final Account? account;
-  BottomNavigation(
-      {super.key, required this.colorPallete, required this.account});
+  final String uid;
+  BottomNavigation({super.key, required this.colorPallete, required this.uid});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +77,7 @@ class BottomNavigation extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfileScreen(account: account!),
+                      builder: (context) => ProfileScreen(profileUid: uid),
                     ));
               },
               child: Column(

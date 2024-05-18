@@ -129,7 +129,6 @@ class PostService {
         if (key.toString() == 'comments') {
           final temp = value as Map<Object?, Object?>;
           bool isExist = false;
-          bool isEmpty = false;
           temp.forEach((key, value) {
             List<String> comments = [];
             final eachUid = key.toString();
@@ -173,7 +172,6 @@ class PostService {
       data.forEach((key, value) {
         if (key.toString() == 'comments') {
           final temp = value as Map<Object?, Object?>;
-          List<String> comments = [];
           temp.forEach((key, value) {
             final listComments = value as List<Object?>;
             if (listComments[0].toString().isEmpty) {
