@@ -177,9 +177,7 @@ class PostService {
             if (listComments[0].toString().isEmpty) {
               return;
             } else {
-              for (var commentMessage in listComments) {
-                length++;
-              }
+              length += listComments.length;
             }
           });
         }

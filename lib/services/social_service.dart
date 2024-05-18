@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flux/screens/models/account.dart';
 import 'package:flux/services/profile_service.dart';
 
@@ -52,5 +53,18 @@ class SocialService {
     } catch (e) {
       print(e);
     }
+  }
+
+  static Future<List<Account>> getAllAccounts() async {
+    List<Account> allAccounts = [];
+    try {
+      final getAllUsers =
+          await FirebaseFirestore.instance.collection('accounts').get();
+
+      for (var element in getAllUsers.docs) {
+        allAccounts.add((await ProfileService.getAccountByUid(element.id))!);
+      }
+    } catch (e) {}
+    return allAccounts;
   }
 }
