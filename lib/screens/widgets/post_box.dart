@@ -316,13 +316,7 @@ class _PostBoxState extends State<PostBox> {
                               child: Icon(Icons.comment_rounded,
                                   color: widget.colorPallete.fontColor),
                             ),
-                            if (widget.post.comments[widget.uid]![0]
-                                .toString()
-                                .isNotEmpty) ...[
-                              Text(commentsLength.toString(),
-                                  style: TextStyle(
-                                      color: widget.colorPallete.fontColor)),
-                            ]
+                            Text(commentsLength.toString()),
                           ],
                         ),
                         GestureDetector(

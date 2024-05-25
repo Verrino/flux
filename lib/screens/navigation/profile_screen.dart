@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 alignment: Alignment.topRight,
                 children: [
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Row(
                         children: [
@@ -119,8 +119,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                      Text(widget.account.bio,
-                          style: TextStyle(color: colorPallete.fontColor)),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text.rich(
+                          TextSpan(
+                              text: widget.account.bio,
+                              style: TextStyle(color: colorPallete.fontColor)),
+                        ),
+                      ),
                       if (account.username == widget.account.username)
                         GestureDetector(
                           child: Container(

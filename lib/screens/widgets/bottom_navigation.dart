@@ -19,7 +19,10 @@ class BottomNavigation extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(context, 'home');
+                Navigator.popAndPushNamed(
+                  context,
+                  'home',
+                );
               },
               child: Column(
                 children: [
@@ -76,7 +79,7 @@ class BottomNavigation extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProfileScreen(account: account!),
