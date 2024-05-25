@@ -6,6 +6,7 @@ import 'package:flux/screens/authentications/register_screen.dart';
 import 'package:flux/screens/launch_app_screen.dart';
 import 'package:flux/screens/navigation/home_screen.dart';
 import 'package:flux/screens/navigation/posting_screen.dart';
+import 'package:flux/screens/navigation/search_screen.dart';
 import 'package:flux/screens/navigation/settings_screen.dart';
 import 'package:flux/screens/profiles/insert_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,6 +35,7 @@ class MainApp extends StatelessWidget {
         'home': (context) => const HomeScreen(),
         'settings': (context) => const SettingsScreen(),
         'post': (context) => const PostingScreen(),
+        'search': (context) => const SearchScreen(),
       },
     );
   }

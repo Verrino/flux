@@ -119,4 +119,83 @@ class ProfileService {
 
     return uid;
   }
+
+  static Future<List<Account>> getAccountsByUsername(String username) async {
+    List<Account> accountsUid = [];
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('accounts').get();
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        if (data['username']
+                .toString()
+                .substring(0, username.length)
+                .toLowerCase() ==
+            username.toLowerCase()) {
+          accountsUid.add((await getAccountByUid(doc.id))!);
+        }
+      }
+    } catch (e) {}
+
+    return accountsUid;
+  }
+
+  static Future<void> edit(
+      String uid,
+      String? username,
+      String? phoneNumber,
+      String? bio,
+      List<dynamic>? followings,
+      List<dynamic>? followers,
+      String? profilePictureUrl,
+      int? posts) async {
+    Account account = (await getAccountByUid(uid))!;
+    try {
+      await FirebaseFirestore.instance.collection('accounts').doc(uid).set({
+        "username": username ?? account.username,
+        "phone_number": phoneNumber ?? account.phoneNumber,
+        "bio": bio ?? account.bio,
+        "followings": followings ?? account.followings,
+        "followers": followers ?? account.followers,
+        "profilePictureUrl": profilePictureUrl ?? account.profilePictureUrl,
+        "posts": posts ?? account.posts,
+      }).whenComplete(() {
+        print("Edit Selesai");
+      });
+    } catch (e) {}
+  }
+
+  static Future<void> follow(String uid, String targetUid) async {
+    Account? user = await getAccountByUid(uid);
+    Account? targetUser = await getAccountByUid(targetUid);
+
+    try {
+      List<dynamic> userFollowings = user!.followings;
+      userFollowings.add(targetUid);
+      edit(uid, null, null, null, userFollowings, null, null, null);
+
+      List<dynamic> targetFollowers = targetUser!.followers;
+      targetFollowers.add(uid);
+      edit(targetUid, null, null, null, null, targetFollowers, null, null);
+    } catch (e) {}
+  }
+
+  static Future<void> unfollow(String uid, String targetUid) async {
+    Account? user = await getAccountByUid(uid);
+    Account? targetUser = await getAccountByUid(targetUid);
+
+    try {
+      List<dynamic> userFollowings = user!.followings;
+      if (userFollowings.contains(targetUid)) {
+        userFollowings.remove(targetUid);
+      }
+      edit(uid, null, null, null, userFollowings, null, null, null);
+
+      List<dynamic> targetFollowers = targetUser!.followers;
+      if (targetFollowers.contains(uid)) {
+        targetFollowers.remove(uid);
+      }
+      edit(targetUid, null, null, null, null, targetFollowers, null, null);
+    } catch (e) {}
+  }
 }

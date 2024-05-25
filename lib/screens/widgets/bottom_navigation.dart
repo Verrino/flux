@@ -38,7 +38,7 @@ class BottomNavigation extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                // Navigator.pushNamed(context, '');
+                Navigator.popAndPushNamed(context, 'search');
               },
               child: Column(
                 children: [

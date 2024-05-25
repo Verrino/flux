@@ -62,12 +62,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             List<Posting>.empty()) as List<Posting>;
                         List<Widget> postingBoxes = [];
                         for (Posting post in posts) {
-                          postingBoxes.add(PostBox(
-                            colorPallete: colorPallete,
-                            uid: post.uid!,
-                            post: post,
-                          ));
-                          postingBoxes.add(const SizedBox(height: 10));
+                          if (account.followings.contains(post.uid)) {
+                            postingBoxes.add(PostBox(
+                              colorPallete: colorPallete,
+                              uid: post.uid!,
+                              post: post,
+                            ));
+                            postingBoxes.add(const SizedBox(height: 10));
+                          }
                         }
                         return ListView(
                           children: postingBoxes,

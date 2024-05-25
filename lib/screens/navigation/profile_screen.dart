@@ -22,8 +22,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late ColorPallete colorPallete;
   late SharedPreferences prefs;
-  late Account account;
-  late String accountUid;
+  late Account comerAccount;
+  late Account ownerAccount;
+  late String _accountUid;
+  late String _targetUid;
 
   bool _isLoading = true;
   String selectedOption = "posted";
@@ -31,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    ownerAccount = widget.account;
     initialize();
   }
 
@@ -39,12 +42,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       colorPallete = value.getBool('isDarkMode') ?? false
           ? DarkModeColorPallete()
           : LightModeColorPallete();
-      account = (await ProfileService.getAccountByUid(
+      comerAccount = (await ProfileService.getAccountByUid(
           FirebaseAuth.instance.currentUser!.uid))!;
-      accountUid =
-          (await ProfileService.getUidByUsername(widget.account.username))!;
+      _accountUid = FirebaseAuth.instance.currentUser!.uid;
+      _targetUid =
+          (await ProfileService.getUidByUsername(ownerAccount.username))!;
+      ownerAccount = (await ProfileService.getAccountByUid(_targetUid))!;
       setState(() {
         _isLoading = false;
+        ownerAccount = ownerAccount;
       });
       return value;
     });
@@ -68,13 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           CircleAvatar(
                             backgroundImage:
-                                NetworkImage(widget.account.profilePictureUrl),
+                                NetworkImage(ownerAccount.profilePictureUrl),
                             radius: 60,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.account.username,
+                              Text(ownerAccount.username,
                                   style:
                                       TextStyle(color: colorPallete.fontColor)),
                               Row(
@@ -82,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Column(
                                     children: [
                                       Text(
-                                          widget.account.followers.length
+                                          ownerAccount.followers.length
                                               .toString(),
                                           style: TextStyle(
                                               color: colorPallete.fontColor)),
@@ -94,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   Column(
                                     children: [
                                       Text(
-                                          widget.account.followings.length
+                                          ownerAccount.followings.length
                                               .toString(),
                                           style: TextStyle(
                                               color: colorPallete.fontColor)),
@@ -105,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   Column(
                                     children: [
-                                      Text(widget.account.posts.toString(),
+                                      Text(ownerAccount.posts.toString(),
                                           style: TextStyle(
                                               color: colorPallete.fontColor)),
                                       Text('Posts',
@@ -123,11 +129,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text.rich(
                           TextSpan(
-                              text: widget.account.bio,
+                              text: ownerAccount.bio,
                               style: TextStyle(color: colorPallete.fontColor)),
                         ),
                       ),
-                      if (account.username == widget.account.username)
+                      if (comerAccount.username == ownerAccount.username)
                         GestureDetector(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -144,23 +150,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-                      if (account.username != widget.account.username)
-                        GestureDetector(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 120),
-                            decoration: BoxDecoration(
-                              color: colorPallete.buttonColor,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Follow',
-                              style: TextStyle(
-                                color: colorPallete.fontColor,
+                      if (comerAccount.username != ownerAccount.username) ...[
+                        if (ownerAccount.followers.contains(_accountUid))
+                          GestureDetector(
+                            onTap: () {
+                              ProfileService.unfollow(_accountUid, _targetUid)
+                                  .whenComplete(
+                                () {
+                                  initialize();
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 120),
+                              decoration: BoxDecoration(
+                                color: colorPallete.buttonColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'Unfollow',
+                                style: TextStyle(
+                                  color: colorPallete.fontColor,
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                        if (!ownerAccount.followers.contains(_accountUid))
+                          GestureDetector(
+                            onTap: () {
+                              ProfileService.follow(_accountUid, _targetUid)
+                                  .whenComplete(
+                                () {
+                                  initialize();
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 120),
+                              decoration: BoxDecoration(
+                                color: colorPallete.buttonColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                !ownerAccount.followings.contains(_accountUid)
+                                    ? 'Follow'
+                                    : 'Follow Back',
+                                style: TextStyle(
+                                  color: colorPallete.fontColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -210,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   List<Posting>.empty()) as List<Posting>;
                               List<Widget> postingBoxes = [];
                               for (Posting post in posts) {
-                                if (post.uid == accountUid) {
+                                if (post.uid == _accountUid) {
                                   postingBoxes.add(PostBox(
                                     colorPallete: colorPallete,
                                     uid: post.uid!,
@@ -261,8 +304,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            bottomNavigationBar:
-                BottomNavigation(colorPallete: colorPallete, account: account),
+            bottomNavigationBar: BottomNavigation(
+                colorPallete: colorPallete, account: comerAccount),
           );
   }
 }

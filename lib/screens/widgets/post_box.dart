@@ -316,7 +316,9 @@ class _PostBoxState extends State<PostBox> {
                               child: Icon(Icons.comment_rounded,
                                   color: widget.colorPallete.fontColor),
                             ),
-                            Text(commentsLength.toString()),
+                            Text(commentsLength.toString(),
+                                style: TextStyle(
+                                    color: widget.colorPallete.fontColor)),
                           ],
                         ),
                         GestureDetector(
