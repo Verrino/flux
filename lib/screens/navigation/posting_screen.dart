@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/posting.dart';
+import 'package:flux/models/posting.dart';
 import 'package:flux/services/post_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -79,7 +79,7 @@ class _PostingScreenState extends State<PostingScreen> {
                           likes: [FirebaseAuth.instance.currentUser!.uid],
                           postedTime: DateTime.now(),
                           postId: null,
-                          uid: '',
+                          posterUid: '',
                         ),
                         FirebaseAuth.instance.currentUser!.uid,
                       ).whenComplete(() {

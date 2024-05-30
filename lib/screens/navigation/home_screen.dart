@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/models/posting.dart';
+import 'package:flux/models/account.dart';
+import 'package:flux/models/posting.dart';
 import 'package:flux/screens/widgets/bottom_navigation.dart';
 import 'package:flux/screens/widgets/post_box.dart';
 import 'package:flux/services/post_service.dart';
@@ -62,10 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             List<Posting>.empty()) as List<Posting>;
                         List<Widget> postingBoxes = [];
                         for (Posting post in posts) {
-                          if (account.followings.contains(post.uid)) {
+                          if (account.followings.contains(post.posterUid)) {
                             postingBoxes.add(PostBox(
                               colorPallete: colorPallete,
-                              uid: post.uid!,
+                              uid: post.posterUid!,
                               post: post,
                             ));
                             postingBoxes.add(const SizedBox(height: 10));

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
+import 'package:flux/models/account.dart';
 import 'package:flux/screens/navigation/profile_screen.dart';
 
 class BottomNavigation extends StatelessWidget {
   final ColorPallete colorPallete;
   final Account? account;
-  BottomNavigation(
+  const BottomNavigation(
       {super.key, required this.colorPallete, required this.account});
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
+import 'package:flux/models/account.dart';
 import 'package:flux/services/profile_service.dart';
 
 class CommentBox extends StatefulWidget {

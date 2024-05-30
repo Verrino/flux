@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/models/posting.dart';
+import 'package:flux/models/account.dart';
+import 'package:flux/models/posting.dart';
 import 'package:flux/screens/navigation/profile_screen.dart';
 import 'package:flux/screens/widgets/bottom_navigation.dart';
 import 'package:flux/screens/widgets/post_box.dart';
@@ -98,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             for (Posting post in posts) {
                               postingBoxes.add(PostBox(
                                 colorPallete: colorPallete,
-                                uid: post.uid!,
+                                uid: post.posterUid!,
                                 post: post,
                               ));
                               postingBoxes.add(const SizedBox(height: 10));

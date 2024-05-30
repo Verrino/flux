@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/models/posting.dart';
+import 'package:flux/models/account.dart';
+import 'package:flux/models/posting.dart';
 import 'package:flux/screens/navigation/profile_screen.dart';
 import 'package:flux/screens/widgets/comment_box.dart';
 import 'package:flux/services/post_service.dart';
@@ -115,7 +113,7 @@ class _PostBoxState extends State<PostBox> {
                           onDoubleTap: () {
                             try {
                               if (!_isLiked! &&
-                                  widget.post.uid !=
+                                  widget.post.posterUid !=
                                       FirebaseAuth.instance.currentUser!.uid) {
                                 PostService.like(
                                         FirebaseAuth.instance.currentUser!.uid,
@@ -152,25 +150,18 @@ class _PostBoxState extends State<PostBox> {
                             GestureDetector(
                               onTap: () {
                                 try {
-                                  if (_isLiked! &&
-                                      widget.post.uid !=
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid) {
+                                  if (_isLiked!) {
                                     PostService.dislike(
                                             FirebaseAuth
                                                 .instance.currentUser!.uid,
                                             widget.post)
                                         .whenComplete(() => initialize());
                                   } else {
-                                    if (widget.post.uid !=
-                                        FirebaseAuth
-                                            .instance.currentUser!.uid) {
-                                      PostService.like(
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              widget.post)
-                                          .whenComplete(() => initialize());
-                                    }
+                                    PostService.like(
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid,
+                                            widget.post)
+                                        .whenComplete(() => initialize());
                                   }
                                 } catch (e) {
                                   print("error");
@@ -212,7 +203,7 @@ class _PostBoxState extends State<PostBox> {
                                             ),
                                           ),
                                           child: CommentBox(
-                                            uid: widget.post.uid!,
+                                            uid: widget.post.posterUid!,
                                             colorPallete: widget.colorPallete,
                                             comment:
                                                 widget.post.postingDescription,

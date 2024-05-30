@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flux/color_pallete.dart';
-import 'package:flux/screens/models/account.dart';
-import 'package:flux/screens/models/posting.dart';
+import 'package:flux/models/account.dart';
+import 'package:flux/models/posting.dart';
 import 'package:flux/screens/widgets/bottom_navigation.dart';
 import 'package:flux/screens/widgets/post_box.dart';
 import 'package:flux/services/authentication_service.dart';
@@ -253,10 +253,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   List<Posting>.empty()) as List<Posting>;
                               List<Widget> postingBoxes = [];
                               for (Posting post in posts) {
-                                if (post.uid == _accountUid) {
+                                if (post.posterUid == _accountUid) {
                                   postingBoxes.add(PostBox(
                                     colorPallete: colorPallete,
-                                    uid: post.uid!,
+                                    uid: post.posterUid!,
                                     post: post,
                                   ));
                                   postingBoxes.add(const SizedBox(height: 10));

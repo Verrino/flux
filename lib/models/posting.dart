@@ -1,6 +1,6 @@
 class Posting {
   String? postingImageUrl;
-  final String? uid;
+  final String? posterUid;
   final String? postId;
   final String postingDescription;
   final String location;
@@ -16,7 +16,7 @@ class Posting {
       required this.comments,
       required this.postedTime,
       required this.postId,
-      required this.uid});
+      required this.posterUid});
 
   factory Posting.fromJson(Map<String, dynamic> json) {
     return Posting(
@@ -27,7 +27,7 @@ class Posting {
       comments: json['comments'],
       postedTime: DateTime.now(),
       postId: json['post_id'],
-      uid: json['uid'],
+      posterUid: json['uid'],
     );
   }
 }
